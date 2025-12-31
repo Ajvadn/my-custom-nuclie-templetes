@@ -17,12 +17,6 @@ http:
     path:
       - "{{BaseURL}}"
 
-    headers:
-      # Inject into headers that are commonly logged/displayed in Admin Panels
-      User-Agent: "{{blind}}"
-      Referer: "{{blind}}"
-      X-Forwarded-For: "{{blind}}"
-
     payloads:
       blind:
         # --- Custom XSS Report ---
@@ -47,6 +41,16 @@ http:
       - part: query
         type: replace
         mode: single
+        fuzz:
+          - "{{blind}}"
+      # Fuzz Headers
+      - part: header
+        type: replace
+        mode: single
+        keys:
+          - User-Agent
+          - Referer
+          - X-Forwarded-For
         fuzz:
           - "{{blind}}"
 
