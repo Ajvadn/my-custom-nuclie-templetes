@@ -13,7 +13,7 @@ http:
       - "{{BaseURL}}"
 
     payloads:
-      xss_payloads: ../payloads/xss.txt
+      xss_payloads: "../payloads/xss.txt"
 
     fuzzing:
       - part: query

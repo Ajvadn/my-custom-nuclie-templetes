@@ -13,7 +13,7 @@ http:
       - "{{BaseURL}}"
 
     payloads:
-      lfi_payloads: ../payloads/lfi.txt
+      lfi_payloads: "../payloads/lfi.txt"
 
     fuzzing:
       - part: query

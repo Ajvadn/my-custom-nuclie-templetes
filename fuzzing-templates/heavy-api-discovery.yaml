@@ -13,7 +13,7 @@ http:
       - "{{BaseURL}}/{{api_paths}}"
 
     payloads:
-      api_paths: ../payloads/api.txt
+      api_paths: "../payloads/api.txt"
 
     stop-at-first-match: true
     matchers-condition: and

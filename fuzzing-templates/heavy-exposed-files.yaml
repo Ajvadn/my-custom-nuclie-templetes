@@ -13,7 +13,7 @@ http:
       - "{{BaseURL}}/{{filenames}}"
 
     payloads:
-      filenames: ../payloads/juicy_files.txt
+      filenames: "../payloads/juicy_files.txt"
 
     stop-at-first-match: true
     matchers-condition: and

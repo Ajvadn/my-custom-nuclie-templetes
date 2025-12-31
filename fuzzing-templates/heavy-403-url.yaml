@@ -13,7 +13,7 @@ http:
       - "{{BaseURL}}/{{bypass_payloads}}"
 
     payloads:
-      bypass_payloads: ../payloads/403_url_payloads.txt
+      bypass_payloads: "../payloads/403_url_payloads.txt"
 
     stop-at-first-match: true
     matchers-condition: and

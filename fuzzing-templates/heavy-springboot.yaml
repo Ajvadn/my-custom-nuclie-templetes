@@ -13,7 +13,7 @@ http:
       - "{{BaseURL}}/{{actuator_paths}}"
 
     payloads:
-      actuator_paths: ../payloads/spring-boot.txt
+      actuator_paths: "../payloads/spring-boot.txt"
 
     stop-at-first-match: true
     matchers-condition: and

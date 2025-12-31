@@ -13,7 +13,7 @@ http:
       - "{{BaseURL}}"
 
     payloads:
-      sqli_payloads: ../payloads/allsqli.txt
+      sqli_payloads: "../payloads/allsqli.txt"
 
     fuzzing:
       - part: query

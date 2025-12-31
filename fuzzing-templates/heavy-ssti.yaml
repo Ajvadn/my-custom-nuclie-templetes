@@ -13,7 +13,7 @@ http:
       - "{{BaseURL}}"
 
     payloads:
-      ssti_payloads: ../payloads/ssti.txt
+      ssti_payloads: "../payloads/ssti.txt"
 
     fuzzing:
       - part: query

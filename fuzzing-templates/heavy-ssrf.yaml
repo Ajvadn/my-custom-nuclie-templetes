@@ -13,7 +13,7 @@ http:
       - "{{BaseURL}}"
 
     payloads:
-      ssrf_payloads: ../payloads/ssrf.txt
+      ssrf_payloads: "../payloads/ssrf.txt"
 
     fuzzing:
       - part: query

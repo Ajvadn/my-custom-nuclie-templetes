@@ -13,7 +13,7 @@ http:
       - "{{BaseURL}}/{{admin_paths}}"
 
     payloads:
-      admin_paths: ../payloads/admin.txt
+      admin_paths: "../payloads/admin.txt"
 
     stop-at-first-match: true
     matchers-condition: and

