@@ -1,0 +1,37 @@
+id: heavy-ssti-fuzz
+
+info:
+  name: Heavy SSTI Fuzzing (Strict)
+  author: ajvad
+  severity: high
+  description: Fuzzes all query parameters with a massive list of SSTI payloads. Removed weak number matching.
+  tags: ssti,fuzz,dast
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    payloads:
+      ssti_payloads: ../payloads/ssti.txt
+
+    fuzzing:
+      - part: query
+        type: replace
+        mode: single
+        fuzz:
+          - "{{ssti_payloads}}"
+
+    stop-at-first-match: true
+    matchers-condition: or
+    matchers:
+      # Removed the "49" matcher. It generates too many FPs.
+      # Only match reliable high-value strings
+      - type: regex
+        part: body
+        regex:
+          - "uid=[0-9]+\\(.*?\\) gid=[0-9]+\\(.*?\\)"
+          - "sstitest" # If you add {{'ssti'+'test'}} to your list
+          - "rubysstitest" 
+          - "freemarker\\.template\\.TemplateException"
+          - "org\\.apache\\.velocity\\.exception"

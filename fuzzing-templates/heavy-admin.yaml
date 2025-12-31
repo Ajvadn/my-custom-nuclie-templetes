@@ -1,0 +1,33 @@
+id: heavy-admin-enum
+
+info:
+  name: Heavy Admin Panel Enumeration (Custom List)
+  author: ajvad
+  severity: medium
+  description: Brute-forces admin panel locations using a large custom wordlist.
+  tags: discovery,exposure
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/{{admin_paths}}"
+
+    payloads:
+      admin_paths: ../payloads/admin.txt
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      
+      - type: word
+        part: body
+        words:
+          - "Login"
+          - "Sign in"
+          - "Administration"
+          - "Dashboard"
+          - "Password"
+        condition: or

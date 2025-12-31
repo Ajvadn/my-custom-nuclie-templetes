@@ -1,0 +1,36 @@
+id: heavy-sqli-fuzz
+
+info:
+  name: Heavy SQLi Fuzzing (Custom List)
+  author: ajvad
+  severity: critical
+  description: Fuzzes all query parameters with a massive list of SQLi payloads.
+  tags: sqli,fuzz,dast
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    payloads:
+      sqli_payloads: ../payloads/allsqli.txt
+
+    fuzzing:
+      - part: query
+        type: replace
+        mode: single
+        fuzz:
+          - "{{sqli_payloads}}"
+
+    stop-at-first-match: true
+    matchers-condition: or
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "SQL syntax"
+          - "mysql_fetch_array"
+          - "ORA-01756"
+          - "SQLite/JDBCDriver"
+          - "System.Data.SqlClient.SqlException"
+          - "Unclosed quotation mark"

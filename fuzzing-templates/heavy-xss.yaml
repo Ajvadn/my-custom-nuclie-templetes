@@ -1,0 +1,54 @@
+id: heavy-xss-fuzz
+
+info:
+  name: Heavy XSS Fuzzing (Strict)
+  author: ajvad
+  severity: medium
+  description: Fuzzes all query parameters with a massive list of XSS payloads. Strict checks to avoid JSON/Text false positives.
+  tags: xss,fuzz,dast
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    payloads:
+      xss_payloads: ../payloads/xss.txt
+
+    fuzzing:
+      - part: query
+        type: replace
+        mode: single
+        fuzz:
+          - "{{xss_payloads}}"
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      # 1. Content-Type must be HTML (ignores JSON reflections)
+      - type: dsl
+        dsl:
+          - "contains(header, 'text/html')"
+
+      # 2. Status must be 200
+      - type: status
+        status:
+          - 200
+
+      # 3. Payload must be typically dangerous
+      - type: word
+        part: body
+        words:
+          - "<script>alert(1)</script>"
+          - "<img src=x onerror=alert(1)>"
+          - "javascript:alert(1)"
+        condition: or
+
+      # 4. Negative Matchers: Filter out common false positives like code blocks or documentation
+      - type: word
+        part: body
+        words:
+          - "<pre>"
+          - "<code>"
+          - "An error has occurred"
+        negative: true

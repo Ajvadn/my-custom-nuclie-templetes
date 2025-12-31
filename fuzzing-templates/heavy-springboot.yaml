@@ -1,0 +1,33 @@
+id: heavy-springboot-actuators
+
+info:
+  name: Heavy Spring Boot Actuator Discovery
+  author: ajvad
+  severity: low
+  description: Scans for exposed Spring Boot Actuator endpoints using custom list.
+  tags: springboot,exposure,discovery
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/{{actuator_paths}}"
+
+    payloads:
+      actuator_paths: ../payloads/spring-boot.txt
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: body
+        words:
+          - "actuator"
+          - "heapdump"
+          - "env"
+          - "logback"
+          - "health"
+        condition: or

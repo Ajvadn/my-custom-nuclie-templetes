@@ -1,0 +1,33 @@
+id: heavy-api-discovery
+
+info:
+  name: Heavy API Endpoint Discovery (Custom List)
+  author: ajvad
+  severity: info
+  description: Fuzzes for hidden API endpoints using a massive custom wordlist.
+  tags: api,discovery,fuzz
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/{{api_paths}}"
+
+    payloads:
+      api_paths: ../payloads/api.txt
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      
+      - type: word
+        part: body
+        words:
+          - "json"
+          - "swagger"
+          - "api-docs"
+          - "\"status\": \"ok\""
+          - "\"success\": true"
+        condition: or

@@ -1,0 +1,31 @@
+id: heavy-403-bypass-url
+
+info:
+  name: Heavy 403 Bypass Fuzzing (URL)
+  author: ajvad
+  severity: medium
+  description: Attempts to bypass 403 Forbidden pages using known URL techniques (./, %2e, etc).
+  tags: 403,bypass,fuzz
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/{{bypass_payloads}}"
+
+    payloads:
+      bypass_payloads: ../payloads/403_url_payloads.txt
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      
+      # Ensure we aren't just getting a soft 404 or still forbidden but with 200 OK custom page
+      - type: word
+        part: body
+        words:
+          - "Access Denied"
+          - "Forbidden"
+        negative: true

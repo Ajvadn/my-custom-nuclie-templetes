@@ -1,0 +1,36 @@
+id: heavy-lfi-fuzz
+
+info:
+  name: Heavy LFI Fuzzing (Strict)
+  author: ajvad
+  severity: high
+  description: Fuzzes all query parameters with a massive list of LFI payloads.
+  tags: lfi,fuzz,dast
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    payloads:
+      lfi_payloads: ../payloads/lfi.txt
+
+    fuzzing:
+      - part: query
+        type: replace
+        mode: single
+        fuzz:
+          - "{{lfi_payloads}}"
+
+    stop-at-first-match: true
+    matchers-condition: or
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "root:.*:0:0:"
+          # Strict win.ini check - must contain extensions or files section
+          - "\\[extensions\\]"
+          - "\\[fonts\\]" 
+          # Boot.ini strict
+          - "\\[boot loader\\]"

@@ -1,0 +1,46 @@
+id: heavy-file-discovery
+
+info:
+  name: Heavy Sensitive File Discovery (Strict)
+  author: ajvad
+  severity: high
+  description: Fuzzes for sensitive files. Ignores documentation and example pages.
+  tags: exposure,discovery,fuzz
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/{{filenames}}"
+
+    payloads:
+      filenames: ../payloads/juicy_files.txt
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: body
+        words:
+          - "DB_PASSWORD"
+          - "API_KEY"
+          - "aws_access_key_id"
+          - "root:x:0:0"
+          - "<?php"
+          - "sql dump"
+        condition: or
+
+      # Negative Matchers (FP Reduction)
+      - type: word
+        part: body
+        words:
+          - "Example"
+          - "Usage:"
+          - "Documentation"
+          - "Stack Overflow"
+          - "Reference"
+          - "Not Found" # Soft 404
+        negative: true

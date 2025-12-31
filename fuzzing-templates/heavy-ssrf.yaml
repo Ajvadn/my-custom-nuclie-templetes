@@ -1,0 +1,42 @@
+id: heavy-ssrf-fuzz
+
+info:
+  name: Heavy SSRF Fuzzing (Custom List)
+  author: ajvad
+  severity: critical
+  description: Fuzzes all query parameters with SSRF payloads and checks for OOB interaction.
+  tags: ssrf,fuzz,oob,dast
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    payloads:
+      ssrf_payloads: ../payloads/ssrf.txt
+
+    fuzzing:
+      - part: query
+        type: replace
+        mode: single
+        fuzz:
+          - "{{ssrf_payloads}}"
+
+    stop-at-first-match: true
+    matchers-condition: or
+    matchers:
+      # Matcher 1: OOB Interaction (Primary Goal)
+      - type: word
+        part: interactsh_protocol
+        name: oob-confirmation
+        words:
+          - "http"
+          - "dns"
+      
+      # Matcher 2: Internal Metadata Reflection (e.g. AWS)
+      - type: word
+        part: body
+        words:
+          - "ami-id"
+          - "instance-id"
+          - "latest/meta-data"
