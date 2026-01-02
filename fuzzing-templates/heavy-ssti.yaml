@@ -1,4 +1,4 @@
-id: heavy-ssti-fuzz
+﻿id: heavy-ssti-fuzz
 
 info:
   name: Heavy SSTI Fuzzing (Strict)
@@ -13,7 +13,17 @@ http:
       - "{{BaseURL}}"
 
     payloads:
-      ssti_payloads: "../payloads/ssti.txt"
+      ssti_payloads:
+        - "{{7*7}}"
+        - ""
+        - "{{7*'7'}}"
+        - "<%= 7*7 %>"
+        - "#{7*7}"
+        - "*{7*7}"
+        - "{{config}}"
+        - "{{self}}"
+        - "{{7*'7'}}"
+        - "{{''.class.mro()[1].subclasses()}}"
 
     fuzzing:
       - part: query
@@ -35,3 +45,4 @@ http:
           - "rubysstitest" 
           - "freemarker\\.template\\.TemplateException"
           - "org\\.apache\\.velocity\\.exception"
+

