@@ -1,0 +1,33 @@
+id: fortinet-panel
+
+info:
+  name: Fortinet FortiWeb Panel - Detect
+  author: rix4uni
+  severity: info
+  description: Fortinet FortiWeb login panel was detected.
+  reference:
+    - https://techencyclopedia.wordpress.com/2020/06/09/configure-port1-interface-in-fortigate-vm-to-access-web-based-manager/
+  metadata:
+    shodan-query:
+      - http.favicon.hash:945408572
+  tags: panel,fortinet,fortiweb,login
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/login"
+      - "{{BaseURL}}/remote/login?&lang=en"
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "ftnt-fortinet-grid"
+          - "forticlient"
+        condition: or
+
+      - type: status
+        status:
+          - 200

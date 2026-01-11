@@ -1,0 +1,23 @@
+id: apache-detect
+
+info:
+  name: Apache Detect
+  author: rix4uni
+  severity: info
+  metadata:
+    shodan-query:
+      - "Server: Apache"
+    fofa-query:
+      - "Server: Apache"
+  tags: tech,apache
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    extractors:
+      - type: regex
+        part: header
+        regex:
+          - "Server: Apache/([0-9.]+)|Apache"

@@ -1,0 +1,23 @@
+id: bigip-detect
+
+info:
+  name: BigIP Detect
+  author: rix4uni
+  severity: info
+  metadata:
+    shodan-query:
+      - "Server: BigIP"
+    fofa-query:
+      - "Server: BigIP"
+  tags: tech,bigip
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    extractors:
+      - type: regex
+        part: header
+        regex:
+          - "Server: BigIP/([0-9.]+)|BigIP"

@@ -1,0 +1,23 @@
+id: openresty-detect
+
+info:
+  name: openresty Detect
+  author: rix4uni
+  severity: info
+  metadata:
+    shodan-query:
+      - "Server: openresty"
+    fofa-query:
+      - "Server: openresty"
+  tags: tech,openresty
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    extractors:
+      - type: regex
+        part: header
+        regex:
+          - "Server: openresty/([0-9.]+)|openresty"
